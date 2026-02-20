@@ -1,0 +1,77 @@
+esphome:
+  name: sensor-decibelios
+  friendly_name: Sensor decibelios TV
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+api:
+  encryption:
+    key: "TU_CLAVE_API"
+
+ota:
+  - platform: esphome
+    password: "TU_PASSWORD_OTA"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Sensor-Decibelios"
+    password: "TU_PASSWORD_AP"
+
+captive_portal:
+
+i2s_audio:
+  id: i2s_bus
+  i2s_lrclk_pin: GPIO25
+  i2s_bclk_pin: GPIO26
+
+sensor:
+  - platform: template
+    name: "Nivel sonido dB"
+    id: sound_db
+    unit_of_measurement: "dB"
+    accuracy_decimals: 1
+    update_interval: 200ms
+    lambda: |-
+      static bool init = false;
+      if (!init) {
+        i2s_driver_uninstall(I2S_NUM_0);
+        i2s_config_t cfg = {
+          .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
+          .sample_rate = 16000,
+          .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
+          .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
+          .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+          .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+          .dma_buf_count = 4,
+          .dma_buf_len = 256
+        };
+        i2s_driver_install(I2S_NUM_0, &cfg, 0, NULL);
+        i2s_pin_config_t pins = {
+          .bck_io_num = 26,
+          .ws_io_num = 25,
+          .data_out_num = I2S_PIN_NO_CHANGE,
+          .data_in_num = 32
+        };
+        i2s_set_pin(I2S_NUM_0, &pins);
+        i2s_zero_dma_buffer(I2S_NUM_0);
+        init = true;
+      }
+      int32_t buf;
+      size_t bytes = 0;
+      i2s_read(I2S_NUM_0, buf, sizeof(buf), &bytes, pdMS_TO_TICKS(50));
+      int n = bytes / 4;
+      if (n == 0) return id(sound_db).state;
+      double sum = 0;
+      for (int i = 0; i < n; i++) {
+        double s = buf[i] >> 8;
+        sum += s * s;
+      }
+      double rms = sqrt(sum / n);
+      return rms < 1.0 ? 20.0f : 20.0f * log10f(rms / 8388607.0f) + 120.0f;
