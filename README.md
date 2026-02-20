@@ -2,9 +2,9 @@
 Integrated decibel sensor with ESP32 + INMP441 in Home Assistant via ESPHome. Measures the sound level in real time (30-90 dB) and automatically adjusts the TV volume to maintain a consistent sound level.
 
 # List of components
-- ESP32 DevKit V1 (WROOM-32)
+- ESP32 DevKit V1 (WROOM-32) - [https://s.click.aliexpress.com/e/_EGuNENK](https://s.click.aliexpress.com/e/_EGuNENK)
 - INMP441 MEMS I2S Microphone - [https://s.click.aliexpress.com/e/_Ey25gBI](https://s.click.aliexpress.com/e/_Ey25gBI)
-- Female-to-female Dupont cables
+- Female-to-female Dupont cables - [https://s.click.aliexpress.com/e/_Ew6An8k](https://s.click.aliexpress.com/e/_Ew6An8k)
 
 # Connection diagram
 <img width="1169" height="548" alt="image" src="https://github.com/user-attachments/assets/4538ace8-c3b4-431b-b6ff-92102229fff2" />
