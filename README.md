@@ -7,3 +7,4 @@ Integrated decibel sensor with ESP32 + INMP441 in Home Assistant via ESPHome. Me
 - Female-to-female Dupont cables
 
 # Connection diagram
+<img width="1169" height="548" alt="image" src="https://github.com/user-attachments/assets/4538ace8-c3b4-431b-b6ff-92102229fff2" />
